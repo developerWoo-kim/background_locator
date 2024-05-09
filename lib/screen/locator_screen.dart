@@ -186,14 +186,14 @@ class _LocatorScreenState extends State<LocatorScreen> {
       case PermissionStatus.denied:
       case PermissionStatus.restricted:
         var result = await Permission.locationWhenInUse.request();
-        debugPrint('Result ::: ${result.name}');
+        debugPrint('Result restricted ::: ${result.name}');
         return true;
       case PermissionStatus.permanentlyDenied:
         openAppSettings();
         return false;
       case PermissionStatus.granted:
         var result = await Permission.locationWhenInUse.request();
-        debugPrint('Result ::: ${result.name}');
+        debugPrint('Result granted ::: ${result.name}');
         return true;
       default:
         return false;

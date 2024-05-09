@@ -28,13 +28,17 @@ environment:
 # the latest version available on pub.dev. To see which dependencies have newer
 # versions available, run `flutter pub outdated`.
 dependencies:
+  provider:
   flutter:
     sdk: flutter
+
+  flutter_riverpod: ^2.4.9
 
   background_locator_2: ^2.0.6
   path_provider: ^2.0.8
   permission_handler: ^11.1.0
 
+  geolocator: ^7.3.3
   flutter_naver_map: ^1.1.2
 
 
@@ -63,6 +67,10 @@ flutter:
   # included with your application, so that you can use the icons in
   # the material Icons class.
   uses-material-design: true
+
+  assets:
+    - asset/img/
+    - pubspec.yaml
 
   # To add assets to your application, add an assets section, like this:
   # assets:

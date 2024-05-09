@@ -41,7 +41,10 @@ class _NaverMapScreenState extends State<NaverMapScreen> {
               initialCameraPosition: NCameraPosition(
                 target: NLatLng(37.506932467450326, 127.05578661133796),
                 zoom: 10
-              )
+              ),
+              minZoom: 6,
+              maxZoom: 16
+
             ),
             onMapReady: (controller) {
               controller = controller;
@@ -49,12 +52,13 @@ class _NaverMapScreenState extends State<NaverMapScreen> {
                 id: 'test',
                 icon: const NOverlayImage.fromAssetImage('asset/img/carMarkerImg.png'),
                 position: const NLatLng(37.506932467450326, 127.05578661133796),
-                size: Size(50, 50)
+                size: Size(50, 50),
               );
 
               marker.setOnTapListener((overlay) {
                 controller.updateCamera(NCameraUpdate.scrollAndZoomTo(target: overlay.position));
               });
+
 
 
               // final circle = NCircleOverlay(id: "test", center: const NLatLng(36.3552978000, 127.4186789000));
@@ -76,6 +80,11 @@ class _NaverMapScreenState extends State<NaverMapScreen> {
               controller.getContentRegion(withPadding: true);
 
               print(controller.getCameraPosition());
+            },
+            onCameraChange: (NCameraUpdateReason reason, bool animated) {
+              print(':::: onCameraChange');
+              print(controller?.getCameraPosition());
+
             },
             onCameraIdle: () {
 

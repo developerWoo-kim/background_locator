@@ -1,17 +1,19 @@
 import 'package:background_locator/common/const/colors.dart';
 import 'package:background_locator/common/util/app_bar_util.dart';
 import 'package:background_locator/layout/default_layout.dart';
+import 'package:background_locator/provider/location_provider.dart';
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-class SearchMapScreen extends StatefulWidget {
+class SearchMapScreen extends ConsumerStatefulWidget {
   const SearchMapScreen({super.key});
 
   @override
-  State<SearchMapScreen> createState() => _SearchMapScreenState();
+  ConsumerState<SearchMapScreen> createState() => _SearchMapScreenState();
 }
 
-class _SearchMapScreenState extends State<SearchMapScreen> {
+class _SearchMapScreenState extends ConsumerState<SearchMapScreen> {
   final borderStyle = OutlineInputBorder(
       borderRadius: BorderRadius.circular(5),
       borderSide: BorderSide(color: BODY_TEXT_COLOR5)
@@ -57,7 +59,7 @@ class _SearchMapScreenState extends State<SearchMapScreen> {
                 itemBuilder: (_, index) {
                   return GestureDetector(
                     onTap: () {
-                      Navigator.pop(context, 'pop!!!');
+                      Navigator.pop(context, {'lat': 36.33618408, 'lot': 127.394369});
                     },
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,

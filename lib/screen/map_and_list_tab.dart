@@ -1,18 +1,26 @@
 import 'package:background_locator/common/component/search_box_style1.dart';
 import 'package:background_locator/common/const/colors.dart';
+import 'package:background_locator/common/data/dummy_data.dart';
+import 'package:background_locator/model/location_model.dart';
+import 'package:background_locator/provider/location_provider.dart';
 import 'package:background_locator/screen/map_screen.dart';
 import 'package:background_locator/screen/search_map_screen.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_naver_map/flutter_naver_map.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-class MapAndListTab extends StatefulWidget {
+class MapAndListTab extends ConsumerStatefulWidget {
   const MapAndListTab({super.key});
 
   @override
-  State<MapAndListTab> createState() => _MapAndListTabState();
+  ConsumerState<MapAndListTab> createState() => _MapAndListTabState();
 }
 
-class _MapAndListTabState extends State<MapAndListTab> with TickerProviderStateMixin {
+class _MapAndListTabState extends ConsumerState<MapAndListTab> with TickerProviderStateMixin {
   late TabController _tabController;
+  NaverMapController? mapController;
+
+  NInfoWindow? nInfoWindow;
 
   @override
   void initState() {
@@ -32,6 +40,7 @@ class _MapAndListTabState extends State<MapAndListTab> with TickerProviderStateM
 
   @override
   Widget build(BuildContext context) {
+
     return Column(
       children: [
         Padding(
@@ -41,9 +50,17 @@ class _MapAndListTabState extends State<MapAndListTab> with TickerProviderStateM
               Navigator.of(context).push(
                 MaterialPageRoute(builder: (_) => SearchMapScreen(),),
               ).then((value) {
-
                 if(value != null && value != '') {
-                  print(value);
+                  print(value['lat']);
+                  print(value['lot']);
+
+                  mapController?.updateCamera(NCameraUpdate.fromCameraPosition(
+                    NCameraPosition(
+                      target: NLatLng(value['lat'], value['lot']),
+                      zoom: 15)
+                    )
+                  );
+
                 }
 
               });
@@ -85,7 +102,18 @@ class _MapAndListTabState extends State<MapAndListTab> with TickerProviderStateM
             controller: _tabController,
             physics: NeverScrollableScrollPhysics(), // 탭바에서 스크롤해도 옆으로 안넘어가는 설정
             children: [
-              MapScreen(),
+              Stack(
+                children: [
+                  _NaverMap(),
+                  Positioned(
+                    bottom: 50,
+                    left: 0,
+                    right: 0,
+                    child: _MarkerInfoView()
+                  )
+                ],
+              ),
+
               Container(
                 color: Colors.green[200],
                 alignment: Alignment.center,
@@ -95,11 +123,112 @@ class _MapAndListTabState extends State<MapAndListTab> with TickerProviderStateM
                     fontSize: 30,
                   ),
                 ),
-              ),
+              )
             ],
           ),
         ),
       ],
     );
   }
+
+  Widget _MarkerInfoView() {
+    final state = ref.watch(locationProvider);
+
+    if(state is LocationModelLoading) {
+      return Container(
+        child: CircularProgressIndicator(),
+      );
+    }
+
+    final data = state as LocationModel;
+    return Padding(
+        padding: EdgeInsets.symmetric(horizontal: 30.0),
+        child: Container(
+          decoration: BoxDecoration(
+            color: Colors.white,
+            border: Border.all(
+                color: BODY_TEXT_COLOR,
+                width: 1
+            ),
+          ),
+          height: 100,
+          child: Center(
+            child: Text('ㄴㅇㅁㄴㅇ'),
+          ),
+        )
+    );
+  }
+
+  Widget _NaverMap() {
+    final state = ref.watch(locationProvider);
+
+    if(state is LocationModelLoading) {
+      return Center(
+        child: CircularProgressIndicator(),
+      );
+    }
+
+    final location = state as LocationModel;
+
+    return NaverMap(
+      options: NaverMapViewOptions(
+        mapType: NMapType.basic,
+        // locationButtonEnable: true,
+        initialCameraPosition: NCameraPosition(
+            target: NLatLng(location.latitude, location.longitude),
+            zoom: 15
+        ),
+        minZoom: 6,
+        maxZoom: 16,
+        extent: NLatLngBounds(
+          southWest: NLatLng(31.43, 122.37),
+          northEast: NLatLng(44.35, 132.0),
+        ),
+      ),
+      onMapReady: (controller) {
+        mapController = controller;
+        print('============= ${DummyData.list.length}');
+        for (var model in DummyData.list) {
+          print(model.name);
+          final marker = NMarker(
+            id: model.name,
+            icon: const NOverlayImage.fromAssetImage('asset/img/carMarkerImg.png'),
+            position: NLatLng(model.lat, model.lot),
+            size: Size(50, 50),
+          );
+
+          marker.setOnTapListener((overlay) {
+            // if(nInfoWindow != null) {
+            //   nInfoWindow!.close();
+            // }
+            controller.updateCamera(NCameraUpdate.scrollAndZoomTo(target: overlay.position));
+
+            ref.read(locationProvider.notifier)
+                .changeLocation(
+                  latitude: 25.232132,
+                  longitude: 29.23123,
+                );
+            // nInfoWindow = NInfoWindow.onMarker(
+            //     id: marker.info.id,
+            //     text: model.name,
+            //     offsetY: -300
+            // );
+            // overlay.openInfoWindow(nInfoWindow!);
+          });
+
+          // marker.hasOpenInfoWindow();
+
+          // marker.setMinZoom(13);
+          // marker.setIsMinZoomInclusive(true);
+          // marker.setMaxZoom(17);
+          // marker.setIsMaxZoomInclusive(false);
+
+          controller.addOverlay(marker);
+
+        }
+        print('=============');
+      },
+    );
+  }
 }
+

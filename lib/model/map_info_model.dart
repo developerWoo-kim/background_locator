@@ -19,4 +19,13 @@ class MapInfoModel extends MapInfoModelBase{
   String title;
   String address;
   String image;
+
+  MapInfoModel({
+    required this.title,
+    required this.address,
+    required this.image
+  });
+
+  factory MapInfoModel.fromJson(Map<String, dynamic> json)
+  => _$MapInfoModelFromJson(json);
 }

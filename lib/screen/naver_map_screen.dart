@@ -1,7 +1,6 @@
 import 'package:background_locator/common/data/dummy_data.dart';
 import 'package:background_locator/common/util/app_bar_util.dart';
 import 'package:background_locator/layout/default_layout.dart';
-import 'package:background_locator/provider/map_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_naver_map/flutter_naver_map.dart';
 

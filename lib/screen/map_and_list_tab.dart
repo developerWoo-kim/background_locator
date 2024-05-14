@@ -2,7 +2,9 @@ import 'package:background_locator/common/component/search_box_style1.dart';
 import 'package:background_locator/common/const/colors.dart';
 import 'package:background_locator/common/data/dummy_data.dart';
 import 'package:background_locator/model/location_model.dart';
+import 'package:background_locator/model/map_info_model.dart';
 import 'package:background_locator/provider/location_provider.dart';
+import 'package:background_locator/provider/map_info_provider.dart';
 import 'package:background_locator/screen/map_screen.dart';
 import 'package:background_locator/screen/search_map_screen.dart';
 import 'package:flutter/material.dart';
@@ -34,6 +36,7 @@ class _MapAndListTabState extends ConsumerState<MapAndListTab> with TickerProvid
 
   @override
   void dispose() {
+    print('dispose');
     _tabController.dispose();
     super.dispose();
   }
@@ -132,15 +135,15 @@ class _MapAndListTabState extends ConsumerState<MapAndListTab> with TickerProvid
   }
 
   Widget _MarkerInfoView() {
-    final state = ref.watch(locationProvider);
+    final state = ref.watch(mapInfoProvider);
 
-    if(state is LocationModelLoading) {
+    if(state is MapInfoModelEmptyData) {
       return Container(
-        child: CircularProgressIndicator(),
+        child: Text(''),
       );
     }
 
-    final data = state as LocationModel;
+    final data = state as MapInfoModel;
     return Padding(
         padding: EdgeInsets.symmetric(horizontal: 30.0),
         child: Container(
@@ -152,9 +155,26 @@ class _MapAndListTabState extends ConsumerState<MapAndListTab> with TickerProvid
             ),
           ),
           height: 100,
-          child: Center(
-            child: Text('ㄴㅇㅁㄴㅇ'),
-          ),
+          child: Padding(
+            padding: EdgeInsets.symmetric(horizontal: 16.0, vertical: 10.0),
+            child: Row(
+              children: [
+                Image.asset(data.image,
+                  fit: BoxFit.fill,
+                  width: 80,
+                  height: 80,
+                ),
+                SizedBox(width: 6.0,),
+                Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(data.title),
+                    Text(data.address)
+                  ],
+                )
+              ],
+            ),
+          )
         )
     );
   }
@@ -198,35 +218,29 @@ class _MapAndListTabState extends ConsumerState<MapAndListTab> with TickerProvid
           );
 
           marker.setOnTapListener((overlay) {
-            // if(nInfoWindow != null) {
-            //   nInfoWindow!.close();
-            // }
             controller.updateCamera(NCameraUpdate.scrollAndZoomTo(target: overlay.position));
-
-            ref.read(locationProvider.notifier)
-                .changeLocation(
-                  latitude: 25.232132,
-                  longitude: 29.23123,
-                );
-            // nInfoWindow = NInfoWindow.onMarker(
-            //     id: marker.info.id,
-            //     text: model.name,
-            //     offsetY: -300
-            // );
-            // overlay.openInfoWindow(nInfoWindow!);
+            ref.read(mapInfoProvider.notifier).changeMapInfo(
+              title: model.title,
+              address: model.address,
+              image: model.image
+            );
           });
-
-          // marker.hasOpenInfoWindow();
 
           // marker.setMinZoom(13);
           // marker.setIsMinZoomInclusive(true);
           // marker.setMaxZoom(17);
           // marker.setIsMaxZoomInclusive(false);
-
           controller.addOverlay(marker);
-
         }
         print('=============');
+      },
+      onCameraChange: (NCameraUpdateReason reason, bool animated) {
+        if(reason.payload == -1 && ref.read(mapInfoProvider) is MapInfoModel) {
+          ref.read(mapInfoProvider.notifier).clear();
+        }
+      },
+      onCameraIdle: () {
+        print('onCameraIdle');
       },
     );
   }

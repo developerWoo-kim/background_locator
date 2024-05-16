@@ -199,7 +199,7 @@ class _MapAndListTabState extends ConsumerState<MapAndListTab> with TickerProvid
             zoom: 15
         ),
         minZoom: 6,
-        maxZoom: 16,
+        maxZoom: 17,
         extent: NLatLngBounds(
           southWest: NLatLng(31.43, 122.37),
           northEast: NLatLng(44.35, 132.0),
@@ -209,28 +209,48 @@ class _MapAndListTabState extends ConsumerState<MapAndListTab> with TickerProvid
         mapController = controller;
         print('============= ${DummyData.list.length}');
         for (var model in DummyData.list) {
-          print(model.name);
-          final marker = NMarker(
-            id: model.name,
-            icon: const NOverlayImage.fromAssetImage('asset/img/carMarkerImg.png'),
-            position: NLatLng(model.lat, model.lot),
-            size: Size(50, 50),
-          );
+          if(model.viewLevel == 1) {
 
-          marker.setOnTapListener((overlay) {
-            controller.updateCamera(NCameraUpdate.scrollAndZoomTo(target: overlay.position));
-            ref.read(mapInfoProvider.notifier).changeMapInfo(
-              title: model.title,
-              address: model.address,
-              image: model.image
+            final marker = NMarker(
+              id: model.name,
+              icon: const NOverlayImage.fromAssetImage('asset/img/mart_icon.png'),
+              position: NLatLng(model.lat, model.lot),
+              size: const Size(100, 100),
             );
-          });
 
-          // marker.setMinZoom(13);
-          // marker.setIsMinZoomInclusive(true);
-          // marker.setMaxZoom(17);
-          // marker.setIsMaxZoomInclusive(false);
-          controller.addOverlay(marker);
+            marker.setOnTapListener((overlay) {
+              controller.updateCamera(NCameraUpdate.scrollAndZoomTo(target: overlay.position));
+              ref.read(mapInfoProvider.notifier).changeMapInfo(
+                  title: model.title,
+                  address: model.address,
+                  image: model.image
+              );
+            });
+
+
+            marker.setMinZoom(14);
+            marker.setIsMinZoomInclusive(true);
+            marker.setMaxZoom(18);
+            marker.setIsMaxZoomInclusive(false);
+            controller.addOverlay(marker);
+
+          } else if(model.viewLevel == 2) {
+
+            final circle = NCircleOverlay(
+              id: model.name,
+              center: NLatLng(model.lat, model.lot),
+              text: '123',
+              color: PRIMARY_COLOR2.withOpacity(0.5),
+              radius: 250
+            );
+
+            circle.setMinZoom(12);
+            circle.setIsMinZoomInclusive(true);
+            circle.setMaxZoom(14);
+            circle.setIsMaxZoomInclusive(false);
+            controller.addOverlay(circle);
+          }
+
         }
         print('=============');
       },

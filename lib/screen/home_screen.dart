@@ -1,6 +1,7 @@
 import 'package:background_locator/common/util/app_bar_util.dart';
 import 'package:background_locator/layout/default_layout.dart';
 import 'package:background_locator/screen/locator_screen.dart';
+import 'package:background_locator/screen/map_and_draggable_bottom_screen.dart';
 import 'package:background_locator/screen/naver_map_screen.dart';
 import 'package:background_locator/screen/root_tab.dart';
 import 'package:flutter/material.dart';
@@ -37,6 +38,14 @@ class HomeScreen extends StatelessWidget {
                 );
               },
               child: Text('Naver Map'),
+            ),
+            ElevatedButton(
+              onPressed: () {
+                Navigator.of(context).push(
+                  MaterialPageRoute(builder: (_) => MapAndDraggableBottomScreen(),),
+                );
+              },
+              child: Text('Map & Draggable Bottom Sheet'),
             ),
           ],
         )

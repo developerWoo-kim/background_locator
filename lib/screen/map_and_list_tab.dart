@@ -239,7 +239,6 @@ class _MapAndListTabState extends ConsumerState<MapAndListTab> with TickerProvid
             final circle = NCircleOverlay(
               id: model.name,
               center: NLatLng(model.lat, model.lot),
-              text: '123',
               color: PRIMARY_COLOR2.withOpacity(0.5),
               radius: 250
             );

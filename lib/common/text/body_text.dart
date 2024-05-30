@@ -4,6 +4,7 @@ import 'package:background_locator/common/const/colors.dart';
 import 'package:flutter/material.dart';
 
 enum BodyTextSize {
+  SMALL(12),
   REGULAR(14),
   MEDIUM(16),
   BOLD(18);

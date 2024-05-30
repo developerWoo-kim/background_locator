@@ -6,11 +6,12 @@ enum AppBarType {
   TEXT_TITLE,
   MAP_TAB_BAR,
   MAP_SEARCH_BAR,
+  NONE
 }
 
 class AppBarUtil {
 
-  static AppBar buildAppBar(AppBarType type, {
+  static AppBar? buildAppBar(AppBarType type, {
     String? title,
   }) {
     final borderStyle = OutlineInputBorder(
@@ -32,6 +33,8 @@ class AppBarUtil {
             ],
           ),
         );
+      case AppBarType.NONE:
+        return null;
       default:
         throw ArgumentError('Invalid widget type');
     }

@@ -1,8 +1,11 @@
 import 'package:background_locator/common/const/colors.dart';
+import 'package:background_locator/common/modal/draggable_modal_bottom_sheet.dart';
+import 'package:background_locator/common/text/body_text.dart';
 import 'package:background_locator/common/util/app_bar_util.dart';
 import 'package:background_locator/layout/default_layout.dart';
 import 'package:background_locator/screen/map_and_list_tab.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_naver_map/flutter_naver_map.dart';
 
 class RootTab extends StatefulWidget {
   const RootTab({super.key});
@@ -12,6 +15,7 @@ class RootTab extends StatefulWidget {
 }
 
 class _RootTabState extends State<RootTab>  with TickerProviderStateMixin {
+  late ScrollController scrollController = ScrollController();
   late TabController controller;
   int index = 0;
 
@@ -29,16 +33,86 @@ class _RootTabState extends State<RootTab>  with TickerProviderStateMixin {
     });
   }
 
+  AppBar? _buildAppBar() {
+    switch (index) {
+      case 1:
+        return null;
+      default:
+        return AppBarUtil.buildAppBar(AppBarType.TEXT_TITLE, title: '탭 IN 탭 테스트');
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return DefaultLayout(
-      appBar: AppBarUtil.buildAppBar(AppBarType.TEXT_TITLE, title: '탭 IN 탭 테스트'),
+      appBar: _buildAppBar(),
       body: TabBarView(
         physics: NeverScrollableScrollPhysics(), // 탭바에서 스크롤해도 옆으로 안넘어가는 설정
         controller: controller,
         children: [
           Center(child: MapAndListTab(),),
-          Center(child: Text('2'),),
+          Stack(
+            children: [
+              FractionallySizedBox(
+                heightFactor: 0.62,
+                child: NaverMap(
+                  options: const NaverMapViewOptions(
+                    // mapType: NMapType.navi, default = basic
+                    //   locationButtonEnable: true,
+                      logoMargin: EdgeInsets.only(left: 20, bottom: 30),
+                      initialCameraPosition: NCameraPosition(
+                          target: NLatLng(36.33618408, 127.394369),
+                          zoom: 15
+                      ),
+                      minZoom: 6,
+                      maxZoom: 16
+                  ),
+                  onMapReady: (controller) {
+                    print('=============');
+                  },
+                ),
+              ),
+              DraggableModalBottomSheet(
+                  context: context,
+                  scrollController: scrollController,
+                  content: Column(
+                    children: [
+                      Padding(
+                        padding: EdgeInsets.symmetric(horizontal: 16.0),
+                        child: Column(
+                          children: [
+                            Row(
+                              mainAxisAlignment: MainAxisAlignment.start,
+                              children: [
+                                BodyText(
+                                  title: '목적지를 입력해주세요!',
+                                  textSize: BodyTextSize.MEDIUM,
+                                  fontWeight: FontWeight.w500,
+                                )
+                              ],
+                            )
+                          ],
+                        ),
+                      )
+                    ],
+                  )
+              ),
+              Positioned(
+                top: 60,
+                left: 20,
+                child: GestureDetector(
+                  onTap: () {
+                    Navigator.of(context).pop();
+                  },
+                  child: Container(
+                      width: 30,
+                      height: 30,
+                      child: Icon(Icons.arrow_back, )
+                  ),
+                ),
+              ),
+            ],
+          ),
           Center(child: Text('3'),),
         ],
       ),

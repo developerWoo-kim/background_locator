@@ -1,12 +1,12 @@
 import 'package:flutter/material.dart';
 
 class DefaultLayout extends StatelessWidget {
-  final AppBar appBar;
+  final AppBar? appBar;
   final Widget body;
   final Widget? bottomNavigationBar;
 
   const DefaultLayout({
-    required this.appBar,
+    this.appBar,
     required this.body,
     this.bottomNavigationBar,
     super.key

@@ -17,6 +17,9 @@ void main() async {
   runApp(
       ProviderScope(
         child: MaterialApp(
+          theme: ThemeData(
+              fontFamily: 'SpoqaHanSansNeo'
+          ),
           home: const HomeScreen(),
           debugShowCheckedModeBanner: false,
         ),
